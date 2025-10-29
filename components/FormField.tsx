@@ -1,25 +1,41 @@
 import React from 'react'
-import {FormControl ,FormDescription, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Input} from "@/components/ui/input"    
+import {FormControl , FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Input} from "@/components/ui/input"  
+import {Control, Controller, FieldValues, Path} from   "react-hook-form";
 
-const FormField = () => (
-     <FormField control= {form.control}
-     name = "username"
-     render = {({field})=>(
+interface ControlledFieldProps<T extends FieldValues> {
+  control: any;
+  name: keyof T;
+  label: string;
+  placeholder: string;
+  type ?: string;
+}
+
+const ControlledField = <T extends FieldValues>({
+  control,
+  name,
+  label,
+  placeholder,
+  type = "text",
+}: ControlledFieldProps<T>) => (
+  <Controller
+    name={name as string}
+    control={control}
+    render={({ field }) => (
       <FormItem>
-        <FormLabel>Username</FormLabel>
+        <FormLabel className="label">{label}</FormLabel>
         <FormControl>
-          <Input placeholder = "shadcn" {...field}/>
+          <Input
+         
+           className="input"
+            placeholder={placeholder}
+            type= {'password'}
+             {...field} />
         </FormControl>
-        <FormDescription>
-          This is your public display name.
-        </FormDescription>
-        <FormMessage/>
-        </FormItem>
-     )}
-     />
-)
- 
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+);
 
-
-export default FormField
+export default ControlledField;

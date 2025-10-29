@@ -17,6 +17,9 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
+import { toast } from "sonner"
+import ControlledField from "./FormField"
+import { useRouter } from "next/navigation"
 
 
 
@@ -31,6 +34,7 @@ const authFormSchema = (type : FormType) =>{
 
 
 const AuthForm = ({type} :{type:FormType}) => {
+  const router = useRouter()
   const formSchema= authFormSchema(type);
   // Define your form 
 
@@ -46,10 +50,24 @@ const AuthForm = ({type} :{type:FormType}) => {
 
   //2. define submit handler
 
-  function onSubmit(values: z.infer<typeof formSchema>){
-    console.log(values)
-  }
+  
 
+  function onSubmit(values: z.infer<typeof formSchema>){
+  try{
+    if(type === 'sign-up'){
+      toast.success('Account created Successfully.Please Sign in.')
+      router.push('/sign-in')
+
+    }else{
+     toast.success('Sign in Successfully.')
+     router.push('/')
+    }
+
+  }catch(error){
+    console.log(error);
+    toast.error(`There was an error`)
+  }
+  }
 
   const isSignIn = type ==='sign-in';
   return (
@@ -63,15 +81,34 @@ const AuthForm = ({type} :{type:FormType}) => {
       
     <Form {...form}>
       <form onSubmit = {form.handleSubmit(onSubmit)} className=" w-full space-y-6 mt-4 form">
-     {!isSignIn &&<p>Name</p>}
-     <p>Email</p>
-     <p>Password</p>
+     {!isSignIn && (
+      <ControlledField
+      control = {form.control}
+      name = "name"
+      label = "Username"
+      placeholder = "Enter Your Name"
+      />
+     )}
+     
+      <ControlledField
+      control = {form.control}
+      name = "email"
+      label = "Email"
+      placeholder = "Enter Your Email"
+      />
+      
+      <ControlledField
+      control = {form.control}
+      name = "password"
+      label = "Password"
+      placeholder = "Enter Your Password"
+      />
      <Button className="btn" type = "submit">{isSignIn ? 'Sign in':'Create an Account'}</Button>
      </form>
      </Form>
       
       <p className="text-center">
-         { isSignIn ? 'No account yet' : 'Have an account already?'}
+         { isSignIn ? 'No account yet ! ' : 'Have an account already?'}
 
          <Link href={!isSignIn ? '/sign-in' : '/sign-up'} className="font-bold text-user-primary ml-1">
          {!isSignIn ? "Sign in" : "Sign up"}
