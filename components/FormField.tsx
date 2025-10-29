@@ -29,7 +29,7 @@ const ControlledField = <T extends FieldValues>({
          
            className="input"
             placeholder={placeholder}
-            type= {'password'}
+            type= {'inputType'}
              {...field} />
         </FormControl>
         <FormMessage />
