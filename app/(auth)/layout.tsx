@@ -1,9 +1,12 @@
-import  { ReactNode} from 'react'
+import { ReactNode } from "react";
 
-const Authlayout = ({children} : {children : ReactNode}) => {
+export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <div className='auth-layout'>{children}</div>
-  )
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center"
+      style={{ backgroundImage: "url('/auth-bg.jpg')" }}
+    >
+      {children}
+    </div>
+  );
 }
-
-export default Authlayout

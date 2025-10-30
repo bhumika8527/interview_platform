@@ -5,6 +5,7 @@ import { getFirestore } from 'firebase/firestore';
 
 
 const firebaseConfig = {
+  
   apiKey: "AIzaSyCugSMCmVMyC1fyPoGODO4yKylxVmcKa5o",
   authDomain: "mockify-368a7.firebaseapp.com",
   projectId: "mockify-368a7",

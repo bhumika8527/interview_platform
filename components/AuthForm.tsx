@@ -23,7 +23,6 @@ import { useRouter } from "next/navigation"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
 import { auth } from "@/firebase/client"
 import { signIn, signUp } from "@/lib/actions/auth.actions"
-import { Auth } from "firebase-admin/auth"
 
 
 
@@ -67,7 +66,7 @@ const AuthForm = ({type} :{type:FormType}) => {
       uid: userCredentials.user.uid, 
       name: name!,
       email,
-      password,
+   password,
     })
        
     if(!result.success){
@@ -135,6 +134,7 @@ const AuthForm = ({type} :{type:FormType}) => {
       name = "password"
       label = "Password"
       placeholder = "Enter Your Password"
+      type= "password"
       />
      <Button className="btn" type = "submit">{isSignIn ? 'Sign in':'Create an Account'}</Button>
      </form>
