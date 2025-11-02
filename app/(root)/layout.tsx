@@ -20,7 +20,7 @@ import { isAuthenticated } from '@/lib/actions/auth.actions';
       </Link>
     </nav>
 
-    {children}
+   
               <main className="px-6 py-4">{children}</main>
 
     </div>

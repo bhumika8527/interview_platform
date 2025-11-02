@@ -332,3 +332,23 @@
     transform: translateY(0);
   }
 }
+.call-view {
+  display: flex;
+  gap: 48px;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px;
+}
+
+/* card basics */
+.card {
+  width: 48%;
+  padding: 32px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #0d0d12 0%, #101116 100%);
+  border: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
