@@ -10,3 +10,4 @@ const Authlayout = ({children} : {children : ReactNode}) => {
     </div>
   );
 }
+export default Authlayout;
