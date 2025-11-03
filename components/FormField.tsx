@@ -7,7 +7,7 @@ interface ControlledFieldProps<T extends FieldValues> {
   control: any;
   name: keyof T;
   label: string;
-  placeholder: string;
+  placeholder?: string;
   type ?: string;
 }
 

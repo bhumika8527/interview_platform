@@ -9,7 +9,7 @@ import {
   Form,
  
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+
 import Link from "next/link"
 import { toast } from "sonner"
 import ControlledField from "./FormField"
@@ -96,63 +96,74 @@ const AuthForm = ({type} :{type:FormType}) => {
   }
 
   const isSignIn = type ==='sign-in';
-  return (
-    <div className="card-border lg:min-w-[566px]">
-      <div className="flex flex-col gap-6 card py-14 px-10">
-        <div className="flex flex-row gap-2 justify-center">
-          <Image src= "/logo1.png" alt="logo" height={32} width={38} />
-          <h2 className="text-primary-100">Mockify.ai</h2>
+
+
+
+
+return (
+  <div className="w-full max-w-md rounded-xl shadow-lg p-8 
+     bg-gradient-to-br from-[#0A0F2D] via-[#111936] to-[#1B2347] 
+     text-white">
+    <div className="flex flex-col gap-6">
+      
+      {/* Logo + Title */}
+      <div className="flex flex-col items-center text-center gap-2">
+        <div className="flex items-center gap-2">
+          <Image src="/logo1.png" alt="logo" height={32} width={38} />
+          <h2 className="text-primary-100 text-xl font-semibold">Mockify.ai</h2>
         </div>
-        <h3>Practice job interview with Mockify.ai</h3>
-      
-    <Form {...form}>
-      <form onSubmit = {form.handleSubmit(onSubmit)} className=" w-full space-y-6 mt-4 form">
-     {!isSignIn && (
-      <ControlledField
-      control = {form.control}
-      name = "name"
-      label = "Username"
-      placeholder = "Enter Your Name"
-      />
-     )}
-     
-      <ControlledField
-      control = {form.control}
-      name = "email"
-      label = "Email"
-      placeholder = "Enter Your Email"
-      />
-      
-      <ControlledField
-      control = {form.control}
-      name = "password"
-      label = "Password"
-      placeholder = "Enter Your Password"
-      type= "password"
-      />
-     <Button className="btn" type = "submit">{isSignIn ? 'Sign in':'Create an Account'}</Button>
-     </form>
-     </Form>
-      
-      <p className="text-center">
-         { isSignIn ? 'No account yet ! ' : 'Have an account already?'}
+        <h3 className="text-base font-medium text-black-700">
+          Practice job interview with Mockify.ai
+        </h3>
+      </div>
 
-         <Link href={!isSignIn ? '/sign-in' : '/sign-up'} className="font-bold text-user-primary ml-1">
-         {!isSignIn ? "Sign in" : "Sign up"}
-         </Link>
+      {/* FORM */}
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full space-y-5 mt-4"
+        >
+          {!isSignIn && (
+            <ControlledField
+              control={form.control}
+              name="name"
+              label="Username"
+              placeholder="Enter Your Name"
+            />
+          )}
 
+          <ControlledField
+            control={form.control}
+            name="email"
+            label="Email"
+            placeholder="Enter Your Email"
+          />
+
+          <ControlledField
+            control={form.control}
+            name="password"
+            label="Password"
+            placeholder="Enter Your Password"
+            type="password"
+          />
+
+          <Button className="btn w-full" type="submit">
+            {isSignIn ? "Sign in" : "Create an Account"}
+          </Button>
+        </form>
+      </Form>
+
+      {/* Footer */}
+      <p className="text-center text-sm">
+        {isSignIn ? "No account yet?" : "Have an account already?"}
+        <Link
+          href={!isSignIn ? "/sign-in" : "/sign-up"}
+          className="font-bold text-user-primary ml-1"
+        >
+          {!isSignIn ? "Sign in" : "Sign up"}
+        </Link>
       </p>
-   
-     
-
-    
-     
-
-
-
     </div>
-    </div>
-  )
-}
-
+  </div>
+)}
 export default AuthForm
