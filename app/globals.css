@@ -352,3 +352,54 @@
   align-items: center;
 }
 
+/* subtitle bar (pill) */
+.subtitle-bar {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.06); /* dim translucent */
+  color: #ffffff;
+  padding: 10px 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.06);
+  max-width: 780px;
+  width: fit-content;
+  text-align: center;
+  font-size: 16px;
+  line-height: 1.3;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: transform 150ms ease, opacity 150ms ease;
+  opacity: 0.98;
+  backdrop-filter: blur(4px);
+}
+
+/* interim transcript (live) — highlight slightly */
+.subtitle-bar.subtitle-interim {
+  background: rgba(16, 185, 129, 0.12); /* faint green tint */
+  border-color: rgba(16,185,129,0.22);
+  color: #a7f3d0;
+}
+
+/* placeholder style (if you enable placeholder) */
+.subtitle-bar.subtitle-placeholder {
+  color: rgba(255,255,255,0.7);
+}
+
+/* small responsive tweak for narrow screens */
+@media (max-width: 640px) {
+  .subtitle-bar {
+    max-width: calc(100% - 48px);
+    font-size: 14px;
+    padding: 8px 14px;
+  }
+}
+#vapi-root,
+#vapi-widget-root,
+#vapi-bubble,
+.vapi-widget-container {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
