@@ -220,7 +220,7 @@ interface AgentProps {
   type?: string;
 }
 
-const Agent: React.FC<AgentProps> = ({ userName, userId }) => {
+const Agent: React.FC<AgentProps> = ({ userName, userId,type,interviewId,questions }) => {
   const router = useRouter();
 
   const [isClient, setIsClient] = useState(false);
@@ -282,43 +282,39 @@ const Agent: React.FC<AgentProps> = ({ userName, userId }) => {
     };
   }, [isClient]);
 
+  const handleGenerateFeedback = async (messsages:
+    SavedMessage[]) =>{
+      console.log('Generate feedback here.');
+      const {success, id} = {
+        success:true,
+        id:'feedback-id'
+      }
+     if(success && id){
+      router.push(`/interview/${interviewId}/feedback`)
+     }else{
+      console.log('Error saving feedback');
+      router.push('/')
+     }
+
+    }
+  
+
   useEffect(() => {
     if (callStatus === CallStatus.FINISHED) {
-      setTimeout(() => router.push("/"), 500);
+      if(type === 'geneerate'){
+        router.push('/')
+      }
+      else{
+        handleGenerateFeedback(messages);
+      }
     }
-  }, [callStatus]);
+  }, [messages,callStatus,type,userId]);
 
-//HANDLE CALL USING ASSISTANT ONLY
 
-// const handleCall = async () => {
-//   setCallStatus(CallStatus.CONNECTING);
-
-//   const workflowId = process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID;
-//   if (!workflowId) return console.error("❌ No workflow ID found");
-
-//   try {
-//     await vapi.start(
-//       undefined, // no assistant here
-//       undefined,
-//       undefined,
-//       workflowId, // ✅ run workflow
-//       {
-//         variableValues: {
-//           username: userName,
-//           userid: userId,
-//         },
-//       }
-//     );
-
-//   } catch (err) {
-//     console.error("vapi.start failed:", err);
-//     setCallStatus(CallStatus.INACTIVE);
-//   }
-// };
-
-//ONLY FOR TESTING/////////////////////////////////////////////
-const handleCall = async () => {
+  const handleCall= async ()=>{
   setCallStatus(CallStatus.CONNECTING);
+
+  if(type === 'generate'){
 
   const workflowId = process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID;
   if (!workflowId) return console.error("❌ No workflow ID found");
@@ -335,13 +331,25 @@ const handleCall = async () => {
           userid: userId,
         },
       }
+    
     ); // ✅ close here
   } catch (err) {
     console.error("vapi.start failed:", err);
     setCallStatus(CallStatus.INACTIVE);
   }
 };
+  } else{
+    let formattedQuestions = ' '
 
+    if(questions){
+      formattedQuestions = questions.map((question)=> `-${question}`).join('\n')
+    }
+    await vapi.start('INTERVIEWER',{
+      variableValues:{
+        questions:formattedQuestions
+      }
+    })
+  }
 
 
   const handleDisconnect = () => {
