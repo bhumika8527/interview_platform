@@ -201,6 +201,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { vapi } from "@/lib/vapi.sdk";
+import { interviewer } from "@/constants";
 
 enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -218,6 +219,8 @@ interface AgentProps {
   userName: string;
   userId: string;
   type?: string;
+   interviewId?: string;
+  questions?: string[];
 }
 
 const Agent: React.FC<AgentProps> = ({ userName, userId,type,interviewId,questions }) => {
@@ -261,10 +264,20 @@ const Agent: React.FC<AgentProps> = ({ userName, userId,type,interviewId,questio
       }
     };
 
-    const onSpeechStart = () => setIsSpeaking(true);
-    const onSpeechEnd = () => setIsSpeaking(false);
-    const onError = (e: Error) => console.error("Vapi error:", e);
+   
+    const onSpeechStart = () => {
+      console.log("speech start");
+      setIsSpeaking(true);
+    };
 
+    const onSpeechEnd = () => {
+      console.log("speech end");
+      setIsSpeaking(false);
+    };
+
+    const onError = (error: Error) => {
+      console.log("Error:", error);
+    };
     vapi.on("call-start", onCallStart);
     vapi.on("call-end", onCallEnd);
     vapi.on("message", onMessage);
@@ -311,45 +324,73 @@ const Agent: React.FC<AgentProps> = ({ userName, userId,type,interviewId,questio
   }, [messages,callStatus,type,userId]);
 
 
-  const handleCall= async ()=>{
-  setCallStatus(CallStatus.CONNECTING);
+//   const handleCall= async ()=>{
+//   setCallStatus(CallStatus.CONNECTING);
 
-  if(type === 'generate'){
+//   if(type === 'generate'){
 
-  const workflowId = process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID;
-  if (!workflowId) return console.error("❌ No workflow ID found");
+//   const workflowId = process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID;
+//   if (!workflowId) return console.error("❌ No workflow ID found");
 
-  try {
-    await vapi.start(
-      undefined, // no assistant
-      undefined, // no overrides
-      undefined, // no squad
-      workflowId, // ✅ workflow mode
-      {
+//   try {
+//     await vapi.start(
+//       undefined, // no assistant
+//       undefined, // no overrides
+//       undefined, // no squad
+//       workflowId, // ✅ workflow mode
+//       {
+//         variableValues: {
+//           username: userName,
+//           userid: userId,
+//         },
+//       }
+    
+//     ); // ✅ close here
+//   } catch (err) {
+//     console.error("vapi.start failed:", err);
+//     setCallStatus(CallStatus.INACTIVE);
+//   }
+// };
+//   } else{
+//     let formattedQuestions = ' '
+
+//     if(questions){
+//       formattedQuestions = questions.map((question)=> `-${question}`).join('\n')
+//     }
+//     await vapi.start('interviewer',{
+//       variableValues:{
+//         questions:formattedQuestions
+//       }
+//     })
+//   }
+
+
+//HANDLE CALL/TESTING CODE//////////////////
+  const handleCall = async () => {
+    setCallStatus(CallStatus.CONNECTING);
+
+    if (type === "generate") {
+      await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
         variableValues: {
           username: userName,
           userid: userId,
         },
+      });
+    } else {
+      let formattedQuestions = "";
+      if (questions) {
+        formattedQuestions = questions
+          .map((question) => `- ${question}`)
+          .join("\n");
       }
-    
-    ); // ✅ close here
-  } catch (err) {
-    console.error("vapi.start failed:", err);
-    setCallStatus(CallStatus.INACTIVE);
-  }
-};
-  } else{
-    let formattedQuestions = ' '
 
-    if(questions){
-      formattedQuestions = questions.map((question)=> `-${question}`).join('\n')
+      await vapi.start(interviewer, {
+        variableValues: {
+          questions: formattedQuestions,
+        },
+      });
     }
-    await vapi.start('INTERVIEWER',{
-      variableValues:{
-        questions:formattedQuestions
-      }
-    })
-  }
+  };
 
 
   const handleDisconnect = () => {

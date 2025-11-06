@@ -5,18 +5,15 @@ import { db } from "@/firebase/admin";
 
 
 
-export async function getInterviewsByUserId(userId: string): Promise<Interview[]> {
-  const interviews= await db
-    .collection("interviews")
-    .where("userId", "==", userId)
-    .orderBy("createdAt", "desc")
-    .get();
+export async function getInterviewsByUserId(id: string): Promise<Interview | null> {
+  const doc = await db.collection("interviews").doc(id).get();
 
+  if (!doc.exists) return null;
 
-  return interviews.docs.map((doc) => ({
+  return {
     id: doc.id,
     ...doc.data(),
-  })) as Interview[];
+  } as Interview;
 }
 
 
@@ -39,14 +36,16 @@ export async function getLatestInterviews(params:GetLatestInterviewsParams): Pro
   })) as Interview[];
 }
 
+export async function getInterviewsById(id: string): Promise<Interview | null> {
+  const doc = await db.collection("interviews").doc(id).get();
 
-export async function getInterviewsById(id: string): Promise<Interview[]> {
-  const interviews= await db
-    .collection("interviews")
-    .doc(id)
-    .get();
+  if (!doc.exists) return null;
 
-    
-
-  return interviews.data() as Interview[]
+  return {
+    id: doc.id,
+    ...doc.data(),
+  } as Interview;
 }
+
+
+

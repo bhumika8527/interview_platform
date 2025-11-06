@@ -6,6 +6,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
+
+
+
+
 const page =async () => {
 
   const user= await getCurrentUser();
@@ -17,8 +21,8 @@ const page =async () => {
     ]
   )
 
-  const hasPastInterviews = userInterviews?.length > 0;
-  const hasUpcomingInterviews = latestInterviews?.length >0;
+  const hasPastInterviews = userInterviews?.length! > 0;
+  const hasUpcomingInterviews = latestInterviews?.length! >0;
   return (
     <>
       <section className="card-cta">
@@ -85,3 +89,7 @@ const page =async () => {
         )}
 
 export default page
+
+
+
+
