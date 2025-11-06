@@ -55,10 +55,84 @@
 
 
 
+// import { generateText } from 'ai';
+// import { google } from '@ai-sdk/google';
+// import { getRandomInterviewCover } from '@/lib/utils';
+// import { db } from '@/firebase/admin';
+
+// export async function GET() {
+//   return Response.json({ success: true, data: 'THANK YOU!' }, { status: 200 });
+// }
+
+// export async function POST(request: Request) {
+//   try {
+//     const body = await request.json();
+//     const { type, role, level, techstack, amount, userid } = body;
+
+//     if (!userid) {
+//       return Response.json({ success: false, message: "Missing userId" }, { status: 400 });
+//     }
+
+//     const { text: questions } = await generateText({
+//       model: google('gemini-2.0-flash-001'),
+//       prompt: `Prepare questions for a job interview.
+//       The job role is ${role}.
+//       The job experience level is ${level}.
+//       The tech stack used in the job is: ${techstack}.
+//       The focus between behavioural and technical questions should lean towards: ${type}.
+//       The amount of questions required is: ${amount}.
+//       Please return only the questions, without any additional text.
+//       The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters.
+//       Return only a JSON array: ["Question 1", "Question 2", "Question 3"]`
+//     });
+
+//     const interview = {
+//       role,
+//       type,
+//       level,
+//       techstack: techstack.split(','),
+//       questions: JSON.parse(questions),
+//       userId: userid,
+//       finalized: true,
+//       coverImage: getRandomInterviewCover(),
+//       createdAt: new Date().toISOString()
+//     };
+
+//     await db.collection("interviews").add(interview);
+
+//     return Response.json({ success: true }, { status: 200 });
+
+//   } catch (error: any) {
+//     console.error("Error saving interview:", error);
+//     return Response.json(
+//       {
+//         success: false,
+//         message: error?.message || "Failed to save interview",
+//         error: JSON.stringify(error)
+//       },
+//       { status: 500 }
+//     );
+//   }
+// }
+
+
+
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { getRandomInterviewCover } from '@/lib/utils';
 import { db } from '@/firebase/admin';
+
+interface Interview {
+  role: string;
+  type: string;
+  level: string;
+  techstack: string[];
+  questions: string[];
+  userId: string;
+  finalized: boolean;
+  coverImage: string;
+  createdAt: string;
+}
 
 export async function GET() {
   return Response.json({ success: true, data: 'THANK YOU!' }, { status: 200 });
@@ -69,38 +143,54 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { type, role, level, techstack, amount, userid } = body;
 
-    if (!userid) {
-      return Response.json({ success: false, message: "Missing userId" }, { status: 400 });
+    // Input validation
+    if (!userid || !role || !level || !type || !techstack || !amount) {
+      return Response.json(
+        { success: false, message: "Missing required fields" },
+        { status: 400 }
+      );
     }
 
-    const { text: questions } = await generateText({
+    // Generate AI questions
+    const { text: questionsText } = await generateText({
       model: google('gemini-2.0-flash-001'),
       prompt: `Prepare questions for a job interview.
-      The job role is ${role}.
-      The job experience level is ${level}.
-      The tech stack used in the job is: ${techstack}.
-      The focus between behavioural and technical questions should lean towards: ${type}.
-      The amount of questions required is: ${amount}.
-      Please return only the questions, without any additional text.
-      The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters.
-      Return only a JSON array: ["Question 1", "Question 2", "Question 3"]`
+The job role is ${role}.
+The job experience level is ${level}.
+The tech stack used in the job is: ${techstack}.
+The focus between behavioural and technical questions should lean towards: ${type}.
+The amount of questions required is: ${amount}.
+Please return only valid JSON array like ["Question 1", "Question 2"] without any additional text.
+Do not include special characters like "/" or "*" that could break a voice assistant.`
     });
 
-    const interview = {
+    // Safe JSON parsing
+    let parsedQuestions: string[] = [];
+    try {
+      parsedQuestions = JSON.parse(questionsText);
+      if (!Array.isArray(parsedQuestions)) throw new Error("Invalid questions format");
+    } catch (err) {
+      console.warn("AI returned invalid JSON, using raw text as single question.", err);
+      parsedQuestions = [questionsText];
+    }
+
+    // Prepare interview object
+    const interview: Interview = {
       role,
       type,
       level,
-      techstack: techstack.split(','),
-      questions: JSON.parse(questions),
+      techstack: typeof techstack === "string" ? techstack.split(',') : [],
+      questions: parsedQuestions,
       userId: userid,
       finalized: true,
       coverImage: getRandomInterviewCover(),
       createdAt: new Date().toISOString()
     };
 
-    await db.collection("interviews").add(interview);
+    // Save to Firestore
+    const docRef = await db.collection("interviews").add(interview);
 
-    return Response.json({ success: true }, { status: 200 });
+    return Response.json({ success: true, id: docRef.id }, { status: 200 });
 
   } catch (error: any) {
     console.error("Error saving interview:", error);
